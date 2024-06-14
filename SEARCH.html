@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+</head>
+<style>
+    .main-container {
+  font-family: "Roboto";
+}
+
+.wiki-search-header {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #d5cdcd;
+  padding-top: 30px;
+  padding-right: 20px;
+  padding-bottom: 30px;
+  padding-left: 20px;
+  margin-bottom: 40px;
+}
+
+.wiki-logo {
+  margin-bottom: 30px;
+  width: 150px;
+}
+
+.search-input {
+  font-size: 18px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #d5cdcd;
+  border-radius: 3px;
+  padding: 10px;
+}
+
+.search-results {
+  width: 100%;
+  padding-left: 20px;
+}
+
+.result-item {
+  margin-bottom: 20px;
+}
+
+.result-title {
+  font-size: 22px;
+}
+
+.link-description {
+  color: #444444;
+  font-size: 15px;
+}
+
+.result-url {
+  color: #006621;
+  text-decoration: none;
+}
+</style>
+<body>
+    <div class="main-container">
+        <div class="wiki-search-header text-center">
+          <img class="wiki-logo" src="https://d1tgh8fmlzexmh.cloudfront.net/ccbp-dynamic-webapps/wiki-logo-img.png" />
+          <br />
+          <input placeholder="Type a keyword and press Enter to search" type="search" class="search-input w-100" id="searchInput" />
+        </div>
+        <div class="d-none" id="spinner">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+</body>
+<script>
+    let inputElement=document.getElementById("searchInput");
+    let searchres=document.getElementById("searchResults");
+    let spin=document.getElementById("spinner");
+    function appendresult(n){
+        let{title,link,description}=n;
+        let a=document.createElement('div');
+        a.classList.add("result-Item");
+        searchres.appendChild(a);
+
+        let b=document.createElement('a');
+        b.classList.add("result-Title");
+        b.href=link;
+        b.target="_blank";
+        b.textContent=title;
+        searchres.appendChild(b);
+
+        c=document.createElement('br');
+        searchres.appendChild(c);
+
+        d=document.createElement('a');
+        d.classList.add("result-url");
+        d.textContent=link;
+        d.href=link;
+        d.target="_blank";
+        searchres.appendChild(d);
+
+        e=document.createElement('p');
+        e.classList.add("link-description")
+        e.textContent=description;
+        searchres.appendChild(e);
+
+
+    }
+
+    function searchResult(search_results){
+        spin.classList.toggle("d-none");
+        //let n=earch_results[0];
+        for (let res of search_results){
+            
+        appendresult(res);}
+        
+    }
+    
+    function lok(event){
+        if(event.key==="Enter"){
+            spin.classList.toggle("d-none");
+            searchres.textContent="";
+            let a=inputElement.value;
+            //console.log(a);
+            let url="https://apis.ccbp.in/wiki-search?search="+a;
+            let options={
+                method:"GET"
+            }
+            fetch(url,options)
+            .then(function(response){
+              return response.json();  
+            })
+            .then(function(jsonData){
+                console.log(jsonData);
+                let {search_results}=jsonData;
+                //console.log(result_data);
+                searchResult(search_results);
+            })
+        }
+        //console.log(event.key);
+    }
+    inputElement.addEventListener('keydown',lok);
+    
+</script>
+</html>
